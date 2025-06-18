@@ -1,2 +1,3 @@
-# llm_peft_fine_tuning_example
-Example project in which a Large Language Model is fine-tuned using PEFT.
+# Applying Parameter-Efficient Fine-Tuning (PEFT) to a Large Language Model (LLM)
+
+This example project shows how to fine-tune a Large Language Model using the PEFT library from HuggingFace.
