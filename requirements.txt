@@ -303,6 +303,7 @@ numpy==2.2.6
     #   evaluate
     #   matplotlib
     #   numba
+    #   onnx
     #   onnxruntime
     #   pandas
     #   peft
@@ -314,6 +315,8 @@ numpy==2.2.6
     #   transformers
     #   umap-learn
     #   wordcloud
+onnx==1.18.0
+    # via -r requirements.in
 onnxruntime==1.22.0
     # via -r requirements.in
 overrides==7.7.0
@@ -368,6 +371,7 @@ propcache==0.3.2
     #   yarl
 protobuf==5.29.5
     # via
+    #   onnx
     #   onnxruntime
     #   tensorboard
 psutil==7.0.0
@@ -580,6 +584,7 @@ typing-extensions==4.14.0
     #   ipython
     #   mistune
     #   multidict
+    #   onnx
     #   pydantic
     #   pydantic-core
     #   referencing

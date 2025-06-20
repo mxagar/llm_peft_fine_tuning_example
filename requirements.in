@@ -8,6 +8,7 @@ jupyter
 jupyterlab
 matplotlib
 numpy
+onnx
 onnxruntime
 pandas
 peft
