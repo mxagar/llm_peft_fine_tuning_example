@@ -1,6 +1,6 @@
 # conda env create -f conda.yaml
-# conda remove --name genai --all
-name: genai
+# conda remove --name peft --all
+name: peft
 channels:
   - conda-forge
   - defaults
