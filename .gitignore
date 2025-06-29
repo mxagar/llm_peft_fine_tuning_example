@@ -1,8 +1,8 @@
 dummy_news.csv
 checkpoints
 logs
-distilbert-model-tweets
-distilbert-model-tweets-onnx
+distilbert-model-*
+distilbert-model-*
 __pycache__
 *.pyc
 .ipynb_checkpoints
