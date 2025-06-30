@@ -2,14 +2,27 @@
 
 This example project shows how to fine-tune a Large Language Model using the PEFT library from HuggingFace.
 
-## Notes
+The HuggingFace library [`transformers`](https://huggingface.co/docs/transformers/en/index) in combination with [`peft`](https://github.com/huggingface/peft) makes it very easy to fine-tune Large Language Models (LLMs) for our specific tasks.
+This small project shows how to use those libraries end-to-end to perform a text classification task.
 
-`tweet_eval` is a series of datasets; particularly, we will use the `emotion` subset, which assigns a class label ` 0: anger, 1: joy, 2: optimism, 3: sadness` to a each of the 3257 tweets in the training split.
-Given the small dataset, it makes sense to use a small model as DistilBERT.
-DistilBERT is a distillation of BERT one of the first encoder-only transformer models, trained basically on Masked Language Modeling (MLM) -- predicting a masked word.
-An alternative for larger datasets could be RoBERTa, which was trained roughly on 10x more data than BERT, and has roughly double the parameters than DistilBERT.
-We could use other models, e.g., generative decoder transformers like GPT2, although in general RoBERTa seems to have better performance for classification tasks.
-GPT-2 is similar in size to RoBERTa.
+Specifically:
+
+- We use the [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news) dataset, which consists of 120k news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'`.
+- The [DistilBERT](https://huggingface.co/docs/transformers/en/model_doc/distilbert) model is fine-tuned for the news classification task. In the process, [Low-Rank Adaptation (LoRA)](https://arxiv.org/abs/2106.09685) is used to accelerate the fine-tuning thanks to the [`peft`](https://github.com/huggingface/peft) library.
+
+The underlying LLM is abstracted and easily handled thanks to the [`transformers`](https://huggingface.co/docs/transformers/en/index) library; the user only needs to understand basic concepts such as
+
+- Tokenization of text sequences
+- Embedding vectors of tokens and associated dimensions
+- The motivation and usage of the encoder & decoder modules in LLMs
+- Task-specific heads, such as classification
+
+![LLM Architecture Simplified](./assets/llm_simplified.png)
+
+For a primer in those topics, you can visit
+
+- [mxagar/generative_ai_udacity/01_Fundamentals_GenAI](https://github.com/mxagar/generative_ai_udacity/tree/main/01_Fundamentals_GenAI)
+- [mxagar/nlp_with_transformers_nbs](https://github.com/mxagar/nlp_with_transformers_nbs)
 
 ## Setup
 
@@ -30,6 +43,10 @@ pip-sync requirements.txt
 pip-compile requirements.in
 pip-sync requirements.txt
 ```
+
+## Notebook
+
+The notebook [`llm_peft.ipynb`](./llm_peft.ipynb) contains all the code and explanations necessary to perform the aforementioned fine-tuning.
 
 ## Interesting Links
 
