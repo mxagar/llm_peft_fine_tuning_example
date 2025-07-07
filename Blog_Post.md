@@ -11,3 +11,12 @@ We could use other models, e.g., generative decoder transformers like GPT2, alth
 GPT-2 is similar in size to RoBERTa.
 
 ![LLM Architecture Simplified](./assets/llm_simplified.png)
+
+
+Links:
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- **[The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)**
+- **[The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)**
+- [BERT](https://arxiv.org/abs/1810.04805)
+- [GPT](https://openai.com/index/language-unsupervised/)

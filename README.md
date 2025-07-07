@@ -31,7 +31,7 @@ A recipe to set up a [conda](https://docs.conda.io/en/latest/) environment with 
 ```bash
 # Create the necessary Python environment
 conda env create -f conda.yaml
-conda activate genai
+conda activate peft
 
 # Compile and install all dependencies
 pip-compile requirements.in
