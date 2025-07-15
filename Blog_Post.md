@@ -12,6 +12,8 @@ GPT-2 is similar in size to RoBERTa.
 
 ![LLM Architecture Simplified](./assets/llm_simplified.png)
 
+![LLM Attention](./assets/llm_attention_architecture.png)
+
 
 Links:
 
