@@ -14,6 +14,8 @@ GPT-2 is similar in size to RoBERTa.
 
 ![LLM Attention](./assets/llm_attention_architecture.png)
 
+![Transformer Annotated](./assets/transformer_annotated.png)
+
 Links:
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
