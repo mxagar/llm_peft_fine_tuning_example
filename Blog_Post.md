@@ -46,4 +46,13 @@ docker rm excalidraw
 docker ps
 ```
 
+Blog Post 1: How Are Large Language Models (LLMs) Built?
+Subtitle: A Conceptual Guide for Developers
+
+Blog Post 2: Applying Parameter-Efficient Fine-Tuning (PEFT) to a Large Language Model (LLM)
+Subtitle: When We Need to Adapt LLMs to Specific Tasks and Domains
+
+Blog Post 3: Retrieval Augmented Generation (RAG) with LLMs: Some Blueprints
+Subtitle: How to Use External Knowledge Bases to Enhance LLM Responses
+
 -->
