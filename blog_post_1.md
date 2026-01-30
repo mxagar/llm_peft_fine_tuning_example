@@ -31,15 +31,28 @@ Subtitle: When We Need to Adapt LLMs to Specific Tasks and Domains
 Blog Post 3: Retrieval Augmented Generation (RAG) with LLMs: Some Blueprints
 Subtitle: How to Use External Knowledge Bases to Enhance LLM Responses
 
+
+This site chronicles my observations in the fast-evolving landscape of data science.
+You'll find my explorations of AI/ML topics spanning computer vision, NLP, 3D, robotics... and more.
+
 -->
 
 
 <p align="center">
 <img src="./assets/stochastic_parrot_dalle3.png" alt="A cheerful macaw parrot wearing sunglasses says 42." width="1000"/>
-<small style="color:grey"><a href="https://dl.acm.org/doi/10.1145/3442188.3445922">Stochastic parrots</a> seem to be here to stay, and to be honest, I find them quite useful. Let's see how they work. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying "42".</i>
+Large Language Models (LLMs) have been called <small style="color:grey"><a href="https://dl.acm.org/doi/10.1145/3442188.3445922">stochastic parrots</a> by some; in any case, they seem to be here to stay &mdash; and to be honest, I find them quite useful, if properly used. Let's see how they work. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E 3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying "42".</i>
 </small>
 </p>
 
+The release of [ChatGPT](https://openai.com/blog/chatgpt) in November 2022 revolutionized our lives in the developed world. In a similar way as Google convinced us we need the Internet and their search engine or Apple presented the first actually usable smartphone that made the digital world ubiquitous, OpenAI came up with the next logical innovation: assitant chatbots based on Large Language Models (LLMs). Language models existed beforehand, but OpenAI's chat user interface and the emergent capabilities of their models coming from their humongous network and dataset sizes lead to the perfect killer app: the ever-ready genie that *seems* to know the answer to everything, confidently.
+
+> It feels like *"ask ChatGPT"* has become the new *"google it"*.
+
+
+
+
+
+[An Infinite Text Generator](https://mikelsagardia.io/blog/text-generation-rnn.html)
 
 <p align="center">
 <img src="./assets/llm_simplified.png" alt="LLM Simplified Architecture" width="1000"/>
