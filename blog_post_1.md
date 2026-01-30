@@ -39,9 +39,11 @@ covering topics related to AI/ML, computer vision, NLP, 3D, robotics... and more
 -->
 <p align="center">
 <img src="./assets/stochastic_parrot_dalle3.png" alt="A cheerful macaw parrot wearing sunglasses says 42." width="1000"/>
-<small style="color:grey">Large Language Models (LLMs) have been called <a href="https://dl.acm.org/doi/10.1145/3442188.3445922">stochastic parrots</a> by some; in any case, they seem to be here to stay &mdash; and to be honest, I find them quite useful, if properly used. Let's see how they work. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E 3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying "42".</i>
+<small style="color:grey">Large Language Models (LLMs) have been called <a href="https://dl.acm.org/doi/10.1145/3442188.3445922">stochastic parrots</a> by some; in any case, they seem to be here to stay &mdash; and to be honest, I find them quite useful, if properly used. Let's see how they work. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E 3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying <a href="https://simple.wikipedia.org/wiki/42_(answer)">"42"</a>
+.</i>
 </small>
 </p>
+
 
 The release of [ChatGPT](https://openai.com/blog/chatgpt) in November 2022 revolutionized our lives in the developed world. In a similar way as Google convinced us that the Internet is useful and we need their search engine or Apple presented the first actually usable smartphone that made the digital world ubiquitous, OpenAI came up with the next logical innovation: assitant chatbots based on Large Language Models (LLMs). Language models existed beforehand, but OpenAI's chat user interface and the emergent capabilities of their models coming from their humongous network and dataset sizes lead to the perfect killer app: the ever-ready genie that *seems* to know the answer to everything, confidently.
 
@@ -58,9 +60,23 @@ Simultaneously, [Howard & Ruder (2018)](https://arxiv.org/abs/1801.06146) demons
 
 And that's how the way to the current LLMs was paved. Nowadays, Transformer-based LLMs excel in *everything* NLP-related: text generation, summarization, question answering, code generation, translation, and so on.
 
-## The Original Transformer and Its Siblings
+## The Original Transformer: Its Components and Siblings
 
 Before 
+
+
+<p align="center">
+<img src="./assets/text_embeddings.png" alt="Text Embeddings" width="1000"/>
+<small style="color:grey">Caption.
+</small>
+</p>
+
+<p align="center">
+<img src="./assets/text_image_embeddings.png" alt="Arithmetics with Text and Image Embeddings" width="1000"/>
+<small style="color:grey">Caption.
+</small>
+</p>
+
 
 <div style="height: 20px;"></div>
 <p align="center">── ◆ ──</p>
@@ -75,7 +91,7 @@ Before
 </p>
 
 
-## Deep Dive into the Architecture
+## Deep Dive into the Transformer Architecture
 
 <p align="center">
 <img src="./assets/llm_attention_architecture.png" alt="LLM Attention Architecture" width="1000"/>
