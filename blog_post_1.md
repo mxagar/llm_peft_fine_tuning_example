@@ -49,7 +49,7 @@ The release of [ChatGPT](https://openai.com/blog/chatgpt) in November 2022 revol
 
 > It feels like *"ask ChatGPT"* has become the new *"google it"*.
 
-Current LLMs are based on the **Transformer** architecture, introduced by Google in the seminal work [*Attention Is All You Need* (Vaswani et al. 2017)](https://arxiv.org/abs/1706.03762). Previous to that, [LSTMs or Long short-term memory networks (Hochreiter & Schmidhuber, 1997)](https://en.wikipedia.org/wiki/Long_short-term_memory) used to be state-of-the-art sequence models for Natural Language Processing (NLP). In fact, many of the concepts exploited by the Transformer were developed using LSTMs as the backbone, and one could argue that the LSTM still seems to be a more advanced model that the Transformer itself &mdash; if you'd like an example of an LSTM-based language modeller, you can check this [TV script generator of mine](https://mikelsagardia.io/blog/text-generation-rnn.html).
+Current LLMs are based on the **Transformer** architecture, introduced by Google in the seminal work [*Attention Is All You Need* (Vaswani et al. 2017)](https://arxiv.org/abs/1706.03762). Previous to that, [LSTMs or Long short-term memory networks (Hochreiter & Schmidhuber, 1997)](https://en.wikipedia.org/wiki/Long_short-term_memory) used to be state-of-the-art sequence models for Natural Language Processing (NLP). In fact, many of the concepts exploited by the Transformer were developed using LSTMs as the backbone, and one could argue that the LSTM still seems to be a more advanced model that the Transformer itself &mdash; if you'd like an example of an LSTM-based language modeler, you can check this [TV script generator of mine](https://mikelsagardia.io/blog/text-generation-rnn.html).
 
 However, the Transformer presented some major *practical advantages* that enabled a paradigm shift:
 
@@ -60,16 +60,26 @@ Simultaneously, [Howard & Ruder (2018)](https://arxiv.org/abs/1801.06146) demons
 
 And that's how the way to the current LLMs was paved. Nowadays, Transformer-based LLMs excel in *everything* NLP-related: text generation, summarization, question answering, code generation, translation, and so on.
 
-## The Original Transformer: Its Components and Siblings
+## The Original Transformer: Its Inputs, Components and Siblings
 
-Before 
+Before describing the components of the Transformer, we need to explain how text is represented for computers. In practice, text is converted into a **sequence of feature vectors** ${x_1, x_2, ...}$, each of dimension $m$ (the *embedding dimension*). This is done in the following steps:
 
+1. **[Tokenization](https://en.wikipedia.org/wiki/Large_language_model#Tokenization)**: The text is split into discrete elements called *tokens*. Tokens are units with an identifiable meaning for the model and typically include words or sub-words, as well as punctuation and special symbols.
+2. **Vocabulary construction**: A vocabulary containing all $n$ unique tokens is defined. It provides a mapping between each token string and a numerical identifier (token ID).
+3. **[One-hot](https://en.wikipedia.org/wiki/One-hot) vectors**: Each token is mapped to its token ID. Conceptually, this corresponds to a one-hot vector of size $n$, although in practice models operate directly on token IDs. In a one-hot vector, all cells have the value $0$ except the cell which corresponds to the token ID of the represented word, which contains the value $1$.
+4. **[Embedding](https://en.wikipedia.org/wiki/Word_embedding) lookup**: Token IDs are mapped to dense embedding vectors using an embedding layer. This layer acts as a learnable lookup table (or equivalently, a linear projection of a one-hot vector), producing vectors of size $m$, with $m \ll n$. Typical reference values are $n \approx 100{,}000$ and $m \approx 500$.
 
 <p align="center">
 <img src="./assets/text_embeddings.png" alt="Text Embeddings" width="1000"/>
 <small style="color:grey">Caption.
 </small>
 </p>
+
+By the way, embeddings can be created for images, too, as I explain in [this post on diffusion models](https://mikelsagardia.io/blog/diffusion-for-developers.html). In general, they have some very nice properties:
+
+- They build up a compact space, in contrast to the sparse one-hot vector space.
+- They are continuous and differentiable.
+- If the semantics is captured properly, words with close meaning are pointing to similar directions. As a consequence, we can perform arithmetics with them, such that algebraic operations (`+, -`) can be applied to words; for instance, the word `queen` is expected to be close to `king - man + woman`.
 
 <p align="center">
 <img src="./assets/text_image_embeddings.png" alt="Arithmetics with Text and Image Embeddings" width="1000"/>
