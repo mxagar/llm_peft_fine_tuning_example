@@ -71,7 +71,7 @@ Before describing the components of the Transformer, we need to explain how text
 
 <p align="center">
 <img src="./assets/text_embeddings.png" alt="Text Embeddings" width="1000"/>
-<small style="color:grey">Caption.
+<small style="color:grey">A word/token can be represented as a one-hot vector (sparse) or as an embedding vector (dense). Embedding vectors allow to capture semantics in their directions and make possible a more efficient processing. Image by the author.
 </small>
 </p>
 
@@ -83,25 +83,37 @@ By the way, embeddings can be created for images, too, as I explain in [this pos
 
 <p align="center">
 <img src="./assets/text_image_embeddings.png" alt="Arithmetics with Text and Image Embeddings" width="1000"/>
-<small style="color:grey">Caption.
+<small style="color:grey">Embeddings can be computed for every modality (image, text, audio, video, etc.); we can even create multi-modal embedding spaces. If the embedding vectors capture meaning properly, similar concepts will have vectors to similar directions. As a consequence, we will be able to apply some algebraic operations on them. Image by the author.
 </small>
 </p>
-
 
 <div style="height: 20px;"></div>
 <p align="center">── ◆ ──</p>
 <div style="height: 20px;"></div>
 
+The original Transformer was designed for language translation tasks and it has two parts:
 
+- The **encoder**, which converts the input sequence (e.g., sentence in English) into hidden states or context.
+- The **decoder**, which generates an output sequence (e.g., sentence in Spanish) using as guidance some of the output hidden states of the encoder.
 
 <p align="center">
 <img src="./assets/llm_simplified.png" alt="LLM Simplified Architecture" width="1000"/>
-<small style="color:grey">Caption.
+<small style="color:grey">Simplified architecture of the original <a href="https://arxiv.org/abs/1706.03762">Transformer</a> designed for language translation. Highlighted: inputs (sentence in English), outputs (hidden states and sentence in Spanish), and main parts (the encoder and the decoder).
 </small>
 </p>
 
+Both the encoder and the decoder are subdivided in `N` blocks each; these blocks pass their hidden state outputs as inputs for the successive ones. Note that for the translation task the encoder input contains the full original text; meanwhile, the decoder produces the output sequence one by one, but it always has the the full encoder hidden state.
+
+
+
 
 ## Deep Dive into the Transformer Architecture
+
+<p align="center">
+<img src="./assets/transformer_annotated.png" alt="Transformer Architecture, Annotated" width="1000"/>
+<small style="color:grey">Caption.
+</small>
+</p>
 
 <p align="center">
 <img src="./assets/llm_attention_architecture.png" alt="LLM Attention Architecture" width="1000"/>
@@ -110,11 +122,7 @@ By the way, embeddings can be created for images, too, as I explain in [this pos
 </p>
 
 
-<p align="center">
-<img src="./assets/transformer_annotated.png" alt="Transformer Architecture, Annotated" width="1000"/>
-<small style="color:grey">Caption.
-</small>
-</p>
+
 
 ## Where Do We Go from Here?
 
