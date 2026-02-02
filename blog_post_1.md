@@ -91,21 +91,23 @@ By the way, embeddings can be created for images, too, as I explain in [this pos
 <p align="center">── ◆ ──</p>
 <div style="height: 20px;"></div>
 
-The original Transformer was designed for language translation tasks and it has two parts:
+The original Transformer was designed for language translation and it has two parts:
 
-- The **encoder**, which converts the input sequence (e.g., sentence in English) into hidden states or context.
-- The **decoder**, which generates an output sequence (e.g., sentence in Spanish) using as guidance some of the output hidden states of the encoder.
+- The **encoder**, which converts the input sequence (e.g., a sentence in English) into hidden states or context.
+- The **decoder**, which generates an output sequence (e.g., the translated sentence in Spanish) using as guidance some of the output hidden states of the encoder.
 
 <p align="center">
 <img src="./assets/llm_simplified.png" alt="LLM Simplified Architecture" width="1000"/>
-<small style="color:grey">Simplified architecture of the original <a href="https://arxiv.org/abs/1706.03762">Transformer</a> designed for language translation. Highlighted: inputs (sentence in English), outputs (hidden states and sentence in Spanish), and main parts (the encoder and the decoder).
+<small style="color:grey">Simplified architecture of the original <a href="https://arxiv.org/abs/1706.03762">Transformer</a> designed for language translation. Highlighted: inputs (sentence in English), outputs (hidden states and translated sentence in Spanish), and main parts (the encoder and the decoder).
 </small>
 </p>
 
-Both the encoder and the decoder are subdivided in `N` blocks each; these blocks pass their hidden state outputs as inputs for the successive ones. Note that for the translation task the encoder input contains the full original text; meanwhile, the decoder produces the output sequence one by one, but it always has the the full encoder hidden state.
+Using as reference the figure above, here's how the Transformer works:
 
-
-
+- The encoder and the decoder are subdivided in `N` blocks each; these blocks pass their hidden state outputs as inputs for the successive ones.
+- The input of the encoder are the embedding vectors of the input text sequence. Positional encoding is added
+- For the translation task the encoder input contains the representation of the full original text sequence; meanwhile, the decoder produces the output sequence one by one, but it always has the the full encoder hidden state (the context).
+- 
 
 ## Deep Dive into the Transformer Architecture
 
