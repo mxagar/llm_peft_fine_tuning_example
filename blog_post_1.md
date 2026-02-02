@@ -104,12 +104,30 @@ The original Transformer was designed for language translation and it has two pa
 
 Using as reference the figure above, here's how the Transformer works:
 
-- The encoder and the decoder are subdivided in `N` blocks each; these blocks pass their hidden state outputs as inputs for the successive ones.
-- The input of the encoder are the embedding vectors of the input text sequence. Positional encoding is added
-- For the translation task the encoder input contains the representation of the full original text sequence; meanwhile, the decoder produces the output sequence one by one, but it always has the the full encoder hidden state (the context).
-- 
+- The encoder and the decoder are subdivided in `N` *encoder/decoder blocks* each; these blocks pass their hidden state outputs as inputs for the successive ones.
+
+- The input of the first encoder block are the embedding vectors of the input text sequence. *Positional encodings* are added in the beginning to inject information about token order, since the self-attention layers inside the blocks (see next section) are position-agnostic. In the original paper, positional encoding vectors were $\mathbf{R} \rightarrow \mathbf{R}^n$ sinusoidal mappings: each unique scalar yielded a unique and different vector, thanks to systematically applying sinusoidal functions to the scalar. However, in practice learned positional embeddings are often used instead.
+
+- For the translation task the encoder input contains the representation of the full original text sequence; meanwhile, the decoder produces the output sequence one by one, but it always has the the full and final encoder hidden state (the context).
+
+- The *decoder blocks* work in a similar way as the *encoder blocks*; the last *decoder block* produces the final set of hidden states, which are mapped to output token probabilities using a linear layer followed by a softmax function (i.e., we have a classification head over the vocabulary).
+
+Soon after the publication of the original encoder-decoder Transformer designed for the language translation task, two related, important Transformers were introduced:
+
+- [**BERT**: Pre-training of Deep Bidirectional Transformers for Language Understanding (Devlin et al., 2018)](https://arxiv.org/abs/1810.04805), which is an implementation of the **encoder-only** part of the original Transformer. 
+- [**GPT**: Improving Language Understanding by Generative Pre-Training (Radford et al., 2018)](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf), an implementation of the **decode-only** part of the original Transformer.
+
+BERT-like *encoder-only* transformers are commonly used to generate *feature vectors* $x$ of texts which can be used in downstream applications such as text or token/word classification. If the Encoder is trained separately, the sequence text is shown to the architecture with a masked token which needs to be predicted. This scheme is called *masked language modeling*.
+
+GPT-like *decoder-only* transformers are commonly used as *generative models* to predict the next token in a sequence, given all the previous tokens (i.e., the context, which includes the prompt). During training, the model is shown sequences of text and learns to predict each token based on the preceding ones.
+
+The full *encoder-decoder* architecture is not as common as the other two currently, but it is used in some specific models for text-to-text tasks, such as summarization and translation. Examples include [T5 (Raffel et al., 2019)](https://arxiv.org/abs/1910.10683) and [BART (Lewis et al., 2019)](https://arxiv.org/pdf/1910.13461).
 
 ## Deep Dive into the Transformer Architecture
+
+So far we have seen the big picture of the Transformer architecture and its subtypes (encoder-decoder, encoder-only, decoder-only).
+
+> But what's inside those encoder and decoder blocks? Just Attention, normalization, and linear mappings. Let's see them in detail.
 
 <p align="center">
 <img src="./assets/transformer_annotated.png" alt="Transformer Architecture, Annotated" width="1000"/>
@@ -124,10 +142,19 @@ Using as reference the figure above, here's how the Transformer works:
 </p>
 
 
+## Some Other Important Concepts
 
+- Context size.
+- Distillation: DillBERT.
+- Scaling laws.
+- Emergent abilities.
+- RLHF: Reinforcement Learning with Human Feedback.
+- Mixture of Experts.
+- Reasoning models.
+- PEFT: Parameter-Efficient Fine-Tuning.
+- RAG: Retrieval Augmented Generation.
 
 ## Where Do We Go from Here?
-
 
 Links:
 
@@ -137,15 +164,6 @@ Links:
 - [BERT](https://arxiv.org/abs/1810.04805)
 - [GPT](https://openai.com/index/language-unsupervised/)
 
-Other important papers:
-
-- GPT: decoder, generative model.
-- BERT: encoder.
-- Scaling laws.
-- Emergent abilities.
-- RLHF: Reinforcement Learning with Human Feedback.
-- PEFT: Parameter-Efficient Fine-Tuning.
-- RAG: Retrieval Augmented Generation.
 
 <div style="height: 20px;"></div>
 <p align="center">── ◆ ──</p>
