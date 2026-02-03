@@ -125,27 +125,46 @@ The full *encoder-decoder* architecture is not as common as the other two curren
 
 ## Deep Dive into the Transformer Architecture
 
-So far we have seen the big picture of the Transformer architecture and its subtypes (encoder-decoder, encoder-only, decoder-only).
+So far, we've seen the big picture of the Transformer architecture and its subtypes (encoder-decoder, encoder-only, decoder-only).
 
 > But what's inside those encoder and decoder blocks? Just Attention, normalization, and linear mappings. Let's see them in detail.
 
 <p align="center">
 <img src="./assets/transformer_annotated.png" alt="Transformer Architecture, Annotated" width="1000"/>
-<small style="color:grey">Caption.
+<small style="color:grey">The Transformer architecture with all its components. Image from the orinal paper by <a href="https://arxiv.org/abs/1706.03762">Vaswani et al. (2017)</a>, modified by the author.
 </small>
 </p>
+
+As we can see in the figure above, each of the `N` encoder and decoder blocks are composed of the followng sub-components:
+
+- **Multi-Head Self-Attention modules**: The core component of the Transformer. It allows the model to focus on different parts of the input sequence when processing each token. Multiple attention heads enable the model to capture various relationships and dependencies in the data. More on this below :wink:
+- **Skip connections, Add & Norm**: These are [residual (skip) connections](https://arxiv.org/abs/1512.03385) followed by [layer normalization](https://en.wikipedia.org/wiki/Normalization_(machine_learning)#Layer_normalization). Residual connections help to avoid vanishing gradients in deep networks by allowing gradients to flow directly through the skip connections. Normalizing the inputs across the features dimension stabilizes and accelerates training.
+- **Feed-Forward Neural Network** (FFNN, i.e., several concatenated linear mappings): A fully connected feed-forward network applied independently to each position. It consists of two linear transformations with a [ReLU](https://en.wikipedia.org/wiki/Rectified_linear_unit) activation in between, allowing the model to learn complex representations.
+
+The key contribution of the Transformer architecture is the **Self-Attention** mechanism. Attention was introduced by [Bahdanau et al. (2014)](https://arxiv.org/abs/1409.0473) and it allows the model to weigh the importance of different tokens in the input sequence when processing each token. In practice for the Transformer, similarities of the tokens in the sequence are computed simultaneously (i.e., dot product) and used to weight and sum the embeddings in successive steps.
+
+We can see there are different types of attention modules in the Transformer:
+
+- Self-Attention in the encoder blocks: Each token attends to all tokens in the input sequence.
+- Masked Self-Attention in the decoder blocks: Each token attends to all previous tokens in the output sequence (masked to prevent attending to future tokens).
+- Encoder-Decoder Cross-Attention in the decoder blocks: Each token in the output sequence attends to all tokens in the input sequence. In other words, all final hidden states from the encoder are used in the attention computation.
+
+Additionally, each attention module is implemented as a **Multi-Head Attention** mechanism. This means that multiple attention heads are used in parallel. Here's a brief overview of how it works:
 
 <p align="center">
 <img src="./assets/llm_attention_architecture.png" alt="LLM Attention Architecture" width="1000"/>
-<small style="color:grey">Caption.
+<small style="color:grey">The LLM Attention architecture annotated.
 </small>
 </p>
 
+
+
+> I hope now it's clear the title of the Transformer paper *Attention Is All You Need*: It turns out that successively focusing and transforming the embeddings via the attention mechanism produces the magic in the LLMs.
 
 ## Some Other Important Concepts
 
 - Context size.
-- Distillation: DillBERT.
+- Distillation: DistilBERT.
 - Scaling laws.
 - Emergent abilities.
 - RLHF: Reinforcement Learning with Human Feedback.
