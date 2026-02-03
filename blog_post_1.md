@@ -173,7 +173,7 @@ Then, these $Y_1, ..., Y_n$ contextualized embeddings are concatenated and linea
 
 > I hope now it's clear the title of the Transformer paper *Attention Is All You Need*: It turns out that successively focusing and transforming the embeddings via the attention mechanism produces the magic in the LLMs.
 
-Finally, let's see some practical size values for reference:
+Finally, let's see some typical size values, for reference:
 
 - Embedding size: 768, 1024, 1280, 1600, 2048.
 - Sequence length (context, number of tokens): 128, 256, 512, 1024, 2048, 4096, 8192.
