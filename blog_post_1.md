@@ -145,26 +145,50 @@ The key contribution of the Transformer architecture is the **Self-Attention** m
 
 We can see there are different types of attention modules in the Transformer:
 
-- Self-Attention in the encoder blocks: Each token attends to all tokens in the input sequence.
-- Masked Self-Attention in the decoder blocks: Each token attends to all previous tokens in the output sequence (masked to prevent attending to future tokens).
-- Encoder-Decoder Cross-Attention in the decoder blocks: Each token in the output sequence attends to all tokens in the input sequence. In other words, all final hidden states from the encoder are used in the attention computation.
+- Self-Attention in the encoder blocks: Each token attends to the similarities of *all* tokens in the input sequence. It's called self-attention, because the similarities of the input tokens only are used, i.e., without any interaction with the decoder. For more information, keep reading below.
+- Masked Self-Attention in the decoder blocks: Each token attends to *all previous* tokens in the output sequence (masked to prevent attending to future tokens).
+- Encoder-Decoder Cross-Attention in the decoder blocks: Each token in the output sequence attends to *all tokens in the encoder-input sequence*. In other words, all final hidden states from the encoder are used in the attention computation.
 
-Additionally, each attention module is implemented as a **Multi-Head Attention** mechanism. This means that multiple attention heads are used in parallel. Here's a brief overview of how it works:
+Additionally, each attention module is implemented as a **Multi-Head Attention** mechanism. This means that multiple attention heads are used in parallel. The following figure shows brief overview of how this works.
 
 <p align="center">
 <img src="./assets/llm_attention_architecture.png" alt="LLM Attention Architecture" width="1000"/>
-<small style="color:grey">The LLM Attention architecture annotated.
+<small style="color:grey">The LLM (Self-)Attention module, annotated. Image by the author.
 </small>
 </p>
 
+The **Self-Attention Head** is the core implementation of the attention mechanism in the Transformer. Each multi-head attention module contains $n$ self-attention heads, which operate in parallel. The input embedding sequence $Z$ passed to each of these $n$ self-attention heads, where the following occurs:
 
+- We transform the original embeddings $Z$ into $Q$ (query), $K$ (key), and $V$ (value). The transformation is performed by linear/dense layers ($W_Q$, $W_K$, $W_V$), which consist of the learned weights. These *query*, *key*, and *value* variables come from classical [information retreival](https://en.wikipedia.org/wiki/Information_retrieval); as described in [NLP with Transformers (Tunstall et al., 2022)](https://www.oreilly.com/library/view/natural-language-processing/9781098136789/), using the analogy to a recipe they can be interpreted as follows:
+    - $Q$, *queries*: ingredients in the recipe.
+    - $K$, *keys*: the shelf-labels in the supermarket.
+    - $V$, *values*: the items in the shelf.
+- $Q$ and $K$ are used to compute a similarity score between token embedding against token embedding (dot-product), and then we multiply the similarity scores to the values $V$, so the relevant information is amplified. This can be expressed mathematically with the popular and simple *attention* formula:
+  $$Y = \mathrm{softmax}(\frac{QK^T}{\sqrt{d_k}})V,$$
+  where
+    - $Y$ are the *contextualized embeddings*,
+    - and $d_k$ is the dimension of the key vectors (used for scaling).
+
+Then, these $Y_1, ..., Y_n$ contextualized embeddings are concatenated and linearly transformed to yield the final output of the multi-head attention module. The output of the first multi-head self-attention module is the input of the next one, and so on, until all $N$ blocks process embedding sequences. Note that the output embeddings from each encoder block have the same size as the input embeddings, so the encoder block stack has the function of *transforming* those embeddings with the attention mechanism.
 
 > I hope now it's clear the title of the Transformer paper *Attention Is All You Need*: It turns out that successively focusing and transforming the embeddings via the attention mechanism produces the magic in the LLMs.
+
+Finally, let's see some practical size values for reference:
+
+- Embedding size: 768, 1024, 1280, 1600, 2048.
+- Sequence length (context, number of tokens): 128, 256, 512, 1024, 2048, 4096, 8192.
+- Number of layers/blocks, $N$: 12, 24, 36, 48.
+- Head dimension: typically, embedding size divided by number of heads.
+- Number of attention heads, $n$: 12, 16, 20, 32.
+- Feed-Forward Network (FFN) inner dimension: 2048, 4096, 5120, 8192, 10240.
+- Vocabulary size, $m$: 30,000; 50,000; 100,000; 200,000.
+- Total number of parameters: from 110 million (e.g., BERT-base) to 175 billion (e.g., GPT-3).
 
 ## Some Other Important Concepts
 
 - Context size.
 - Distillation: DistilBERT.
+- Generation parameters.
 - Scaling laws.
 - Emergent abilities.
 - RLHF: Reinforcement Learning with Human Feedback.
