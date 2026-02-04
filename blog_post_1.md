@@ -163,11 +163,11 @@ The **Self-Attention Head** is the core implementation of the attention mechanis
     - $Q$, *queries*: ingredients in the recipe.
     - $K$, *keys*: the shelf-labels in the supermarket.
     - $V$, *values*: the items in the shelf.
-- $Q$ and $K$ are used to compute a similarity score between token embedding against token embedding (dot-product), and then we multiply the similarity scores to the values $V$, so the relevant information is amplified. This can be expressed mathematically with the popular and simple *attention* formula:
+- $Q$ and $K$ are used to compute a similarity score between token embedding against token embedding (*self* dot-product), and then we multiply the similarity scores to the values $V$, so the relevant information is amplified). This can be expressed mathematically with the popular and simple *attention* formula:
   $$Y = \mathrm{softmax}(\frac{QK^T}{\sqrt{d_k}})V,$$
   where
     - $Y$ are the *contextualized embeddings*,
-    - and $d_k$ is the dimension of the key vectors (used for scaling).
+    - and $d_k$ is the dimension of the key vectors (used for scaling), which is the same as the embedding size divided by the number of heads (head dimension).
 
 Then, these $Y_1, ..., Y_n$ contextualized embeddings are concatenated and linearly transformed to yield the final output of the multi-head attention module. The output of the first multi-head self-attention module is the input of the next one, and so on, until all $N$ blocks process embedding sequences. Note that the output embeddings from each encoder block have the same size as the input embeddings, so the encoder block stack has the function of *transforming* those embeddings with the attention mechanism.
 
@@ -175,38 +175,77 @@ Then, these $Y_1, ..., Y_n$ contextualized embeddings are concatenated and linea
 
 Finally, let's see some typical size values, for reference:
 
-- Embedding size: 768, 1024, 1280, 1600, 2048.
-- Sequence length (context, number of tokens): 128, 256, 512, 1024, 2048, 4096, 8192.
+- Embedding size: 768, 1024, ..., 2048.
+- Sequence length (context, number of tokens): 128, 256, ..., 8192.
 - Number of layers/blocks, $N$: 12, 24, 36, 48.
-- Head dimension: typically, embedding size divided by number of heads.
 - Number of attention heads, $n$: 12, 16, 20, 32.
-- Feed-Forward Network (FFN) inner dimension: 2048, 4096, 5120, 8192, 10240.
+- Head dimension: typically, embedding size divided by number of heads.
+- Feed-Forward Network (FFN) inner dimension: 2048, 4096, ..., 10240.
 - Vocabulary size, $m$: 30,000; 50,000; 100,000; 200,000.
-- Total number of parameters: from 110 million (e.g., BERT-base) to 175 billion (e.g., GPT-3).
+- Total number of parameters: from 110 million (e.g., BERT-base) to 175 billion (e.g., GPT-3), and much more!
+
+<div style="height: 20px;"></div>
+<div align="center" style="border: 1px solid #e4f312ff; background-color: #fcd361b9; padding: 1em; border-radius: 6px;">
+<strong>
+If you are interested on an implementation of the Transformer, you can check <a href="https://github.com/mxagar/nlp_with_transformers_nbs/blob/main/03_transformer-anatomy.ipynb">this notebook</a>, where I modified the code from the official repository of the book <a href="https://www.oreilly.com/library/view/natural-language-processing/9781098136789/">NLP with Transformers (Tunstall et al., 2022)</a>. In the same <a href="github.com/mxagar/nlp_with_transformers_nbs/">repository</a>, you'll find many other notebooks related to NLP with Transformers.
+</strong>
+</div>
+<div style="height: 30px;"></div>
 
 ## Some Other Important Concepts
 
-- Context size.
-- Distillation: DistilBERT.
-- Generation parameters.
-- Scaling laws.
-- Emergent abilities.
-- RLHF: Reinforcement Learning with Human Feedback.
-- Mixture of Experts.
-- Reasoning models.
-- PEFT: Parameter-Efficient Fine-Tuning.
-- RAG: Retrieval Augmented Generation.
+My goal with this post was to explain in plain but still technical words how LLMs work internally. In that sense, I guess I have already given the best I could and I should finish the text. However, there are some additional details that probably fit nicely as appendices here.Thus, I have decided to include them with a brief description and some references, for the readers who want to go deeper into the topic.
 
-## Where Do We Go from Here?
+<div style="height: 20px;"></div>
+<p align="center">── ◆ ──</p>
+<div style="height: 20px;"></div>
 
-Links:
+[Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context (Dai et al., 2019)](https://arxiv.org/abs/1901.02860)
 
-- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
-- **[The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)**
-- **[The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)**
-- [BERT](https://arxiv.org/abs/1810.04805)
-- [GPT](https://openai.com/index/language-unsupervised/)
+[DistilBERT (Sanh et al., 2019)](https://arxiv.org/abs/1910.01108)
 
+[The Curious Case of Neural Text Degeneration (Holtzman et al., 2019)](https://arxiv.org/abs/1904.09751)
+
+[Scaling Laws for Neural Language Models (Kaplan et al., 2020)](https://arxiv.org/abs/2001.08361)
+
+[Emergent Abilities of Large Language Models (Wei et al., 2022)](https://arxiv.org/abs/2206.07682)
+
+[InstructGPT (Ouyang et al., 2022)](https://arxiv.org/abs/2203.02155)
+
+[Switch Transformers (Fedus et al., 2021)](https://arxiv.org/abs/2101.03961)
+
+[Chain-of-Thought Prompting Elicits Reasoning in Large Language Models (Wei et al., 2022)](https://arxiv.org/abs/2201.11903)
+
+[LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
+
+[Retrieval-Augmented Generation (RAG) for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)](https://arxiv.org/abs/2005.11401)
+
+**Context size** &mdash;
+
+**Distillation** &mdash;
+
+**Generation parameters** &mdash;
+
+**Emergent abilities** &mdash;
+
+**Scaling laws** &mdash;
+
+**RLHF: Reinforcement Learning with Human Feedback** &mdash;
+
+**Mixture of Experts** &mdash;
+
+**Reasoning models** &mdash;
+
+**PEFT: Parameter-Efficient Fine-Tuning** &mdash;
+
+**RAG: Retrieval Augmented Generation** &mdash;
+
+**Agents** &mdash;
+
+
+## Wrapping Up
+
+Summary
 
 <div style="height: 20px;"></div>
 <p align="center">── ◆ ──</p>
@@ -214,6 +253,9 @@ Links:
 
 Expert system for experts.
 
-## Wrapping Up
+Links:
 
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- **[The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)**
+- **[The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)**
 
