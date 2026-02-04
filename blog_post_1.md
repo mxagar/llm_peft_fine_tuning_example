@@ -135,7 +135,7 @@ So far, we've seen the big picture of the Transformer architecture and its subty
 </small>
 </p>
 
-As we can see in the figure above, each of the `N` encoder and decoder blocks are composed of the followng sub-components:
+As we can see in the figure above, each of the `N` encoder and decoder blocks are composed of the following sub-components:
 
 - **Multi-Head Self-Attention modules**: The core component of the Transformer. It allows the model to focus on different parts of the input sequence when processing each token. Multiple attention heads enable the model to capture various relationships and dependencies in the data. More on this below :wink:
 - **Skip connections, Add & Norm**: These are [residual (skip) connections](https://arxiv.org/abs/1512.03385) followed by [layer normalization](https://en.wikipedia.org/wiki/Normalization_(machine_learning)#Layer_normalization). Residual connections help to avoid vanishing gradients in deep networks by allowing gradients to flow directly through the skip connections. Normalizing the inputs across the features dimension stabilizes and accelerates training.
@@ -159,11 +159,11 @@ Additionally, each attention module is implemented as a **Multi-Head Attention**
 
 The **Self-Attention Head** is the core implementation of the attention mechanism in the Transformer. Each multi-head attention module contains $n$ self-attention heads, which operate in parallel. The input embedding sequence $Z$ passed to each of these $n$ self-attention heads, where the following occurs:
 
-- We transform the original embeddings $Z$ into $Q$ (query), $K$ (key), and $V$ (value). The transformation is performed by linear/dense layers ($W_Q$, $W_K$, $W_V$), which consist of the learned weights. These *query*, *key*, and *value* variables come from classical [information retreival](https://en.wikipedia.org/wiki/Information_retrieval); as described in [NLP with Transformers (Tunstall et al., 2022)](https://www.oreilly.com/library/view/natural-language-processing/9781098136789/), using the analogy to a recipe they can be interpreted as follows:
+- We transform the original embeddings $Z$ into $Q$ (query), $K$ (key), and $V$ (value). The transformation is performed by linear/dense layers ($W_Q$, $W_K$, $W_V$), which consist of the learned weights. These *query*, *key*, and *value* variables come from classical [information retrieval](https://en.wikipedia.org/wiki/Information_retrieval); as described in [NLP with Transformers (Tunstall et al., 2022)](https://www.oreilly.com/library/view/natural-language-processing/9781098136789/), using the analogy to a recipe they can be interpreted as follows:
     - $Q$, *queries*: ingredients in the recipe.
     - $K$, *keys*: the shelf-labels in the supermarket.
     - $V$, *values*: the items in the shelf.
-- $Q$ and $K$ are used to compute a similarity score between token embedding against token embedding (*self* dot-product), and then we multiply the similarity scores to the values $V$, so the relevant information is amplified). This can be expressed mathematically with the popular and simple *attention* formula:
+- $Q$ and $K$ are used to compute a similarity score between token embedding against token embedding (*self* dot-product), and then we multiply the similarity scores to the values $V$, so the relevant information is amplified. This can be expressed mathematically with the popular and simple *attention* formula:
   $$Y = \mathrm{softmax}(\frac{QK^T}{\sqrt{d_k}})V,$$
   where
     - $Y$ are the *contextualized embeddings*,
