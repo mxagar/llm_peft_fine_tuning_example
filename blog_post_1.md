@@ -210,80 +210,23 @@ Recall that the output of the generative model is an array of probabilities, spe
 1. consider all token probabilities as candidates $\{p_1, p_2, ...\}$ (full distribution sampling),
 2. and select the token with the highest probability at each generation step: $\mathrm{token} = V(\mathrm{argmax}\{p_1, p_2, ...\})$ (greedy search decoding).
 
-However, such a naive approach can lead to repetitive and dull text generation, as described in [(Holtzman et al., 2019)](https://arxiv.org/abs/1904.09751). To mitigate this issue, these parameters/strategies are often used:
+However, such a naive approach can lead to repetitive and dull text generation, as described by [Holtzman et al. (2019)](https://arxiv.org/abs/1904.09751). To mitigate this issue, these parameters and strategies are often used:
 
-- Temperature: we apply the [softmax]() function to the probabilities using the inverse of a $T$ *temperature* variable as the exponent ([Boltzman distribution]()). That changes the $p$ values as follows:
+- Temperature: we apply the [softmax](https://en.wikipedia.org/wiki/Softmax_function) function to the probabilities using the inverse of a $T$ *temperature* variable as the exponent ([Boltzman distribution](https://en.wikipedia.org/wiki/Boltzmann_distribution)): $p_i' = \exp(\frac{p_i}{T}) / \sum_j \exp(\frac{p_j}{T})$. That changes the $p$ values as follows:
   - $T = 1$: no change, same as in the original output.
-  - $T < 1$: small $p$-s become smaller, larger $p$-s become larger; that means we get a more peaked distribution, i.e. less creativity and more coherence, because the most likely words are going to be chosen.
+  - $T < 1$: small $p$-s become smaller, larger $p$-s become larger; that means we get a more peaked distribution, i.e., less creativity and more coherence, because the most likely words are going to be chosen.
   - $T > 1$: small $p$-s become bigger, larger $p$-s become smaller; that yields a more homogeneous distribution, which leads to more creativity and diversity, because any word/token could be chosen.
-- Top-$k$ and top-$p$: instead of considering all tokens each with their $p$ (with or without $T$), we reduce it to the $k$ most likely ones and select from them using the distribution we have; similarly, with a top-$p$, we can select the first tokens that cumulate up to a certain $p$-threshold. 
-- Beam search decoding (as oposed to greedy search): 
+- Top-$k$ and top-$p$: instead of considering all tokens each with their $p$ (with or without $T$), we reduce it to the $k$ most likely ones and select from them using the distribution we have; similarly, with a top-$p$, we can select the first tokens that cumulate up to a certain $p$-threshold and choose from them.
+- Beam search decoding (as oposed to greedy search): we select a number of beams $b$ and keep track of the most probable next tokens building a tree of options. The most likely paths/beams are chosen, ranking the beams with their summed log probabilities. The higher the number of beams, the better the quality, but the computational effort explodes. Beam search sometimes suffers from repetitive generation; one way to avoid that is using n-gram penalty, i.e., we penalize the repetition of n-grams. This is commonly used in summarization and machine translation.
 
+## Additional Relevant Concepts
 
-<!--
-
-This chapter does not deal with the decoder part of the Transformer model; instead, two aspects related to the next-word sequence generation are introduced:
-
-    Token search during decoding: greedy vs. beam.
-    Sampling: temperature, top-k and top-p.
-
-Key points
-
-    Unexpected feature of the Transformers: they can create text almost undistinguishable from humans.
-    Eventhough Transformers are trained without explicit supervision, they learn to carry out zero-shot tasks
-        Simple sums
-        Code generation
-        Missspelling correction
-        Translations
-        etc.
-    However, note that related texts must occur usually naturally in the training set.
-    Decoding: given an input prompt a word/token is generated, which is concatenated to the input prompt, and the next word is generated iteratively until we obtain an EOS token or we reach the maximum amount of tokens.
-        Encoder-Decoder differences:
-            In the encoder, we input the entire sequence to the model and obtain the output sequence in a single pass
-            In the decoder, we need at least one forward pass for each output token: that requires more resources!
-            In the decoder, we have some hyperparameters post-training which affect the generation, related to the search method and the sampling method.
-        In reality, predicting the next token and extending the input sequence in an autoregressive way is a simplification; the formal method would be to predict a tree of all possible token choices, but that is not feasible in practice.
-        Two main decoding or selection strategies are used:
-            Greedy Search Decoding: at each step, we select (=decode) the token with the highest probability.
-                It's easy to implement, but we can use the built-in generate() method instead, which offers more options.
-            Beam Search Decoding: we select an integer value for b = number_beams, and keep track of the most probable next tokens building a tree of options. The most likely paths/beams are chosen, ranking the beams with their summed log probabilities.
-                We would take the product of (conditional) probabilities, but since that's too small, we use the equivalent sum of log probabilities.
-                The more beams we choose, the better the quality, but the computational effort explodes.
-                Beam search sometimes suffers from repetitive generation; one way to avoid that is using n-gram penalty, i.e., we penalize the repetition of n-grams.
-                This is commonly used in summarization and machine translation.
-    Sampling Methods: for any given decoding/next-word-search strategy, we can decide to sample in different ways; factors that affect here:
-        Temperature: we get the token probabilities as output from the generative LLM; if we apply a softmax with the inverse of a Temperature variable as the exponent, we reshape the token probability distribution (Boltzman distribution):
-            T >> 1: small ps get bigger, large ps smaller -> more homogeneous distribution -> more creativity / diversity, because any word/token could be chosen.
-            T = 1: ps are not changed from the original output.
-            T << 1: small ps smaller, large ps larger -> more peaked distribution -> less creativity and more coherence, because the most likely words are chosen.
-            We can decide to apply T for any decoding strategy or sampling method: greedy/beam search, top-k/p sampling.
-        Top-k: instead of considering all tokens each with their p (with or without T), we reduce it to the k most likely ones and select from them using their distributions.
-        Nucleus Sampling or Top-p: instead of making the number k of the most likely ones to be considered fixed, we make it dynamic by specifying the cumulated probability threshold from which we cut the less likely tokens off; e.g., top_k = 0.9: we consider the first ranking tokens which cumulate up to p = 0.9.
-            We can combine top_k and top_p: usually the k are chosen and the cummulative p is applied.
-
-
--->
-
-
-
-
-## Some Other Important Concepts
-
-My goal with this post was to explain in plain but still technical words how LLMs work internally. In that sense, I guess I have already given the best I could and I should finish the text. However, there are some additional details that probably fit nicely as appendices here.Thus, I have decided to include them with a brief description and some references, for the readers who want to go deeper into the topic.
+My goal with this post was to explain in plain but still technical words how LLMs work internally. In that sense, I guess I have already given the best I could and I should finish the text. However, there are some additional details that probably fit nicely as appendices here. Thus, I have decided to include them with a brief description and some references, for the readers who optionally want to go deeper into the topic.
 
 <div style="height: 20px;"></div>
 <p align="center">── ◆ ──</p>
 <div style="height: 20px;"></div>
 
-[Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context (Dai et al., 2019)](https://arxiv.org/abs/1901.02860)
-
-[DistilBERT (Sanh et al., 2019)](https://arxiv.org/abs/1910.01108)
-
-[Scaling Laws for Neural Language Models (Kaplan et al., 2020)](https://arxiv.org/abs/2001.08361)
-
-[GPT-3: Language Models are Few-Shot Learners (Brown et al., 2020)](https://arxiv.org/abs/2005.14165)
-
-[Emergent Abilities of Large Language Models (Wei et al., 2022)](https://arxiv.org/abs/2206.07682)
 
 [InstructGPT (Ouyang et al., 2022)](https://arxiv.org/abs/2203.02155)
 
@@ -295,26 +238,30 @@ My goal with this post was to explain in plain but still technical words how LLM
 
 [Retrieval-Augmented Generation (RAG) for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)](https://arxiv.org/abs/2005.11401)
 
-**Context size** &mdash;
+**Context Size** &mdash; This refers to the maximum number of words/tokens that the model can consider as input at once, i.e., the input sequence legth or `seq_len`. If we look at the attention mechanism figure above, we will see that the learned weight matrices are independent of the context size; however, the attention computation itself scales quadratically with sequence length due to the $QK^T$ operation. This is a major bottleneck in terms of memory and speed, and it's the main reason why the initial LLMs had a fixed and shorter context size ($512$ - $4,096$ tokens). In recent years, the research community has explored new methods to alleviate that limitation, introducing techniques such as [sparse attention](https://arxiv.org/abs/2004.05150), [linearized attention](https://arxiv.org/abs/2006.16236), [low-rank approximations](https://arxiv.org/abs/2006.04768), and other mathematical/architectural/system tricks. These enable larger context sizes (up to $1,000,000$ tokens in the case of [Gemini Pro](https://gemini.google.com/app)).
 
-**Distillation** &mdash; 97% of BERT's performance, but 40% less memory and 60% faster.
+**Distillation and Quantization** &mdash; As their name indicates, Large Language Models are *large*, and that makes them difficult to deploy in production environments. Two techniques to overcome that are *distillation* and *quantization*. When we distill a model, we train a smaller student model to mimic the behavior of a larger, slower but better prforming teacher (i.e., the original LLM). This achieved, among others, by using the teacher's output probabilities as soft labels for the outputs of the training the student. A notable example of distillation is [DistilBERT (Sanh et al., 2019)](https://arxiv.org/abs/1910.01108), which achieves around 97% of BERT's performance, but with 40% less memory and 60% faster inference. On the other hand, *quantization* consists in representing the weights with lower precision, i.e., `float32 -> int8` ($32/8 = 4$ times smaller models). The models not only become smaller, but the operations can be done faster (even 100x faster), and the accuracy is sometimes similar.
 
-**Emergent abilities** &mdash;
+**Emergent Abilities** &mdash; As described by [Wei et al. (2022)](https://arxiv.org/abs/2206.07682), *"emergent abilities are those that are not present in smaller models, but appear in larger ones"*. In other words, they are capabilities that arise, but which were not explicitly trained. This often referred as *zero-shot* or *few-shot* learning, because the model can perform tasks without any or with very few examples, as demonstrated by [GPT-3 (Brown et al., 2020)](https://arxiv.org/abs/2005.14165), and they start to appear in the 10-100 billion parameter range (GPT-3 had 175 billion parameters). Examples of emergent abilities include arithmetic, commonsense reasoning, and even some forms of creativity. 
 
-**Scaling laws** &mdash; Typical dataset sizes. Typical model sizes. Typical training compute. Typical inference compute.
+**Scaling Laws** &mdash; Kaplan et al. published in 2020 the interesting paper [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361), which describes how the performance of language models scales. They discovered that there is a power-law relationship between the model's performance measured in terms of loss $L$, the required compute $C$, the dataset size $D$ and the model size $N$ (number of parameters): $X = (N, C, D) \rightarrow L(X) \approx 1/X^{\alpha}$, with $\alpha \in [0.05, 0.095]$. 
+
+
+
+
+Typical dataset sizes. Typical model sizes. Typical training compute. Typical inference compute.
 
 **RLHF: Reinforcement Learning with Human Feedback** &mdash;
 
 **Mixture of Experts** &mdash;
 
-**Reasoning models** &mdash;
+**Reasoning Models** &mdash;
 
 **PEFT: Parameter-Efficient Fine-Tuning** &mdash;
 
 **RAG: Retrieval Augmented Generation** &mdash;
 
 **Agents** &mdash;
-
 
 ## Wrapping Up
 
@@ -325,6 +272,13 @@ Summary
 <div style="height: 20px;"></div>
 
 Expert system for experts.
+Productivity
+Conciousness
+World model
+
+<div style="height: 20px;"></div>
+<p align="center">── ◆ ──</p>
+<div style="height: 20px;"></div>
 
 Links:
 
