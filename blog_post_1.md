@@ -39,7 +39,7 @@ covering topics related to AI/ML, computer vision, NLP, 3D, robotics... and more
 -->
 <p align="center">
 <img src="./assets/stochastic_parrot_dalle3.png" alt="A cheerful macaw parrot wearing sunglasses says 42." width="1000"/>
-<small style="color:grey">Large Language Models (LLMs) have been called <a href="https://dl.acm.org/doi/10.1145/3442188.3445922">stochastic parrots</a> by some; in any case, they seem to be here to stay &mdash; and to be honest, I find them quite useful, if properly used. Let's see how they work. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E 3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying <a href="https://simple.wikipedia.org/wiki/42_(answer)">"42"</a>
+<small style="color:grey">Large Language Models (LLMs) have been called <a href="https://dl.acm.org/doi/10.1145/3442188.3445922">stochastic parrots</a> by some; in any case, they seem to be here to stay &mdash; and to be honest, I find them quite useful, if properly used. Image generated using <a href="https://openai.com/index/dall-e-3/">Dall-E 3</a>; prompt: <i> Wide, landscape cartoon illustration of a happy, confident red-blue-yellow macaw wearing black sunglasses, perched on a tree branch in a green forest, with a white comic speech bubble saying <a href="https://simple.wikipedia.org/wiki/42_(answer)">"42"</a>
 .</i>
 </small>
 </p>
@@ -244,12 +244,16 @@ My goal with this post was to explain in plain but still technical words how LLM
 
 **Emergent Abilities** &mdash; As described by [Wei et al. (2022)](https://arxiv.org/abs/2206.07682), *"emergent abilities are those that are not present in smaller models, but appear in larger ones"*. In other words, they are capabilities that arise, but which were not explicitly trained. This often referred as *zero-shot* or *few-shot* learning, because the model can perform tasks without any or with very few examples, as demonstrated by [GPT-3 (Brown et al., 2020)](https://arxiv.org/abs/2005.14165), and they start to appear in the 10-100 billion parameter range (GPT-3 had 175 billion parameters). Examples of emergent abilities include arithmetic, commonsense reasoning, and even some forms of creativity. 
 
-**Scaling Laws** &mdash; Kaplan et al. published in 2020 the interesting paper [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361), which describes how the performance of language models scales. They discovered that there is a power-law relationship between the model's performance measured in terms of loss $L$, the required compute $C$, the dataset size $D$ and the model size $N$ (number of parameters): $X = (N, C, D) \rightarrow L(X) \approx 1/X^{\alpha}$, with $\alpha \in [0.05, 0.095]$. 
+**Scaling Laws** &mdash; Kaplan et al. published in 2020 the interesting paper [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361), which describes how the performance of language models scales. They discovered that there is a power-law relationship between the model's performance measured in terms of loss $L$, the required compute $C$, the dataset size $D$ and the model size $N$ (number of parameters): $L(X) \sim X^{-\alpha}$, with $X \in \{N, C, D\}$ and $\alpha \in [0.05, 0.1]$. In other words, when model size $N$, dataset size $D$, or training compute $C$ are scaled independently (and are not bottlenecks), the training loss $L$ decreases approximately as a power law of each quantity. In that sense, we can use these scaling laws to extrapolate model performance without building them, but theoretically! Similarly, for a fixed compute budget, there is an optimal trade-off between model size and dataset size. These insights led to the development of more efficient training strategies and architectures, such as the ones explored in the [Chinchilla study (Hoffman et al., 2022)](https://arxiv.org/abs/2203.15556), which suggest that smaller models trained on more data can achieve better performance than larger models trained on less data. Finally, note that training compute is roughly proportional to $6 \times N \times D$, while inference compute scales linearly with model size and generated sequence length. For reference, the following table shows some size values:
+
+| Quantity                                      | Low                       | Medium                    | Large                                      |
+| --------------------------------------------- | ------------------------- | ------------------------- | ------------------------------------------ |
+| **Dataset (tokens)**             | ~10⁹ tokens *(BERT-base)* | ~10¹¹ tokens *(LLaMA-7B)* | ~10¹²–10¹³ tokens *(GPT-4 / Gemini-class)* |
+| **Model (parameters)**           | ~10⁸–10⁹ *(DistilBERT)*   | ~10¹⁰ *(LLaMA-13B)*       | ~10¹¹–10¹² *(GPT-3 / MoE models)*          |
+| **Training Compute (FLOPs)**          | ~10²⁰–10²¹ *(BERT-base)*  | ~10²²–10²³ *(LLaMA-7B)*   | ~10²⁴–10²⁵ *(GPT-3 / frontier LLMs)*       |
+| **Inference Compute (FLOPs / token)** | ~10⁸–10⁹ *(DistilBERT)*   | ~10¹⁰–10¹¹ *(LLaMA-13B)*  | ~10¹¹–10¹² *(GPT-3-class)*                 |
 
 
-
-
-Typical dataset sizes. Typical model sizes. Typical training compute. Typical inference compute.
 
 **RLHF: Reinforcement Learning with Human Feedback** &mdash;
 
