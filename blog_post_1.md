@@ -275,19 +275,27 @@ Summary
 <p align="center">── ◆ ──</p>
 <div style="height: 20px;"></div>
 
-LLMs have increased my productivity significantly. I use them extensively for research ([Gemini](https://gemini.google.com/app)), text editing ([ChatGPT](https://chatgpt.com)), and programming ([Github Copilot](https://github.com/copilot) & [Claude]()). However, I think that their *non-human-guided* output is still quite mediocre: they produce verbose dull texts, bloated boilerplate code, etc. The magic happens when the human prompts the request as detailed as possible, either ($i$) by providing an initial version that needs to be polished or ($ii$) a very detailed description of what needs to be produced &mdash; in other words, I believe they are powerful *expert systems for experts*.
+LLMs have increased my productivity significantly. I use them extensively for research ([Gemini](https://gemini.google.com/app)), text editing ([ChatGPT](https://chatgpt.com)), and programming ([Github Copilot](https://github.com/copilot) & [Claude]()). However, I think that their *non-human-guided* output is still quite mediocre: (as of January 2026) they tend to produce verbose dull texts and bloated boilerplate code. The magic happens when an experienced human prompts the request as detailed as possible by providing either ($i$) an initial version of the outcome that needs to be polished, or ($ii$) a very detailed description of what needs to be produced up-front, or ($iii$) a very clear iterative guidance towards the expected goal &mdash; in other words, I believe they are powerful *expert systems **for experts***.
 
-The logical question is: how will younger generations become experts using these tools that seem to solve problems with a mediocre quality, probably without them being fully aware of those limitations? Time will tell, but I suspect that the same way you can ge physically fit only doing sports yourself, there is no shortcut for other disciplines: you need to endure hardship to become a real expert who has enough knowledge and can judge bad from good from better.
+Even if we achieve *expert systems **for non-experts*** which are able to create things without supervision, we humans will require a human to be responsible for the outcomes.
 
-Additionally, I see three major risks in their use:
+As far as the so-called [Artificial General Intelligence (AGI)]() is considered, I think that it is still far away (maybe decades?), despite the warnings declared by respected experts, such as [Hinton](), [Bengio](), [Tegmark](). I tend to align more with the more optimistic views of [Ng]() and [Lecunn](), who see LLMs and AI as disruptive yet net positive tools. The latter even thinks that LLMs are a [dead end]() in the pursue of AGI.
 
-- Dependence: 
+The same way the Internet increased our overall productivity, while replacing some jobs and creating new ones, I think that LLMs will probably have a similar effect. 
+
+However, one logical question is: how will younger, inexperienced generations become real experts if they use these tools that seem to solve problems with a mediocre quality, probably without them being fully aware of those limitations? Time will tell, but I suspect that the same way you can get physically fit only by exercising yourself, there is no shortcut for other disciplines: you need to endure hardship to become a real expert who has enough knowledge and can judge bad from good from better.
+
+Additionally, I do see three major risks in the use of LLMs:
+
+- Dependence: We invented gyms to be fit and healthy.
 - Data harvesting: 
+- Automated surveillance tools: 
 
-As far as the so-called [Artificial General Intelligence (AGI)]() is considered, I think that it is still far away, despite the warnings declared by respected experts, such as [Hinton](), [Bengio](), [Tegmark](). I tend to align more with the more optimistic views of [Ng]() and [Lecunn](), who see LLMs and AI as disruptive yet net positive tools. The latter even thinks that LLMs are a [dead end]() in the pursue of AGI.
 
 I think that I lack of the expertise 
 In my view, 
+
+
 
 Productivity
 
