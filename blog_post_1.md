@@ -218,6 +218,12 @@ However, such a naive approach often leads to repetitive and dull text generatio
 - Top-$k$ and top-$p$: instead of considering all tokens each with their $p$ (with or without $T$), we reduce it to the $k$ most likely ones and select from them using the distribution we have; similarly, with a top-$p$, we can select the first tokens that cumulate up to a certain $p$-threshold and choose from them.
 - Beam search decoding (as oposed to greedy search): we select a number of beams $b$ and keep track of the most probable next tokens building a tree of options. The most likely paths/beams are chosen, ranking the beams with their summed log probabilities. The higher the number of beams, the better the quality, but the computational effort explodes. Beam search sometimes suffers from repetitive generation; one way to avoid that is using n-gram penalty, i.e., we penalize the repetition of n-grams. This is commonly used in summarization and machine translation.
 
+<p align="center">
+<img src="./assets/token_sampling.png" alt="Token Sampling" width="1000"/>
+<small style="color:grey">Token sampling strategies in LLMs. The LLM outputs a probability for each of the tokens in the vocabulary. If we apply a temperature <i>T</i>, top-<i>k</i>, or top-<i>p</i> strategy, we modify the distribution from which the next token is sampled. With <i>T > 1</i>, the distribution becomes more uniform, leading to more diverse outputs (since tokens have a more similar probability); in contrast, with <i>T < 1</i>, the distribution becomes more peaked, leading to more focused and coherent outputs. If we set top-<i>k</i> to be 3, we only consider the three most likely tokens for sampling; similarly, with a top-<i>p</i> threshold of 80%, we consider the smallest set of tokens whose cumulative probability is at least 80%. Image by the author.
+</small>
+</p>
+
 ## Additional Relevant Concepts
 
 My goal with this post was to explain in plain but still technical words how LLMs work internally. In that sense, I guess I have already given the best I could and I should finish the text. However, there are some additional details that probably fit nicely as appendices here. Thus, I have decided to include them with a brief description and some references, for the readers who optionally want to go deeper into the topic.
