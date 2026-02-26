@@ -60,7 +60,7 @@ Let's start!
 <div style="height: 20px;"></div>
 <div align="center" style="border: 1px solid #e4f312ff; background-color: #fcd361b9; padding: 1em; border-radius: 6px;">
 <strong>
-You can find this post's accompanying code in <a href="https://github.com/mxagar/diffusion-examples/ddpm">this GitHub repository</a>.
+You can find this post's accompanying code in <a href="https://github.com/mxagar/diffusion-examples/ddpm">this GitHub repository</a>. If you don't know very well how LLMs work or what embeddings are, I recommend reading my previous post <a href="https://mikelsagardia.io/posts/">How Are Large Language Models (LLMs) Built?</a> before diving into this one.
 </strong>
 </div>
 <div style="height: 30px;"></div>
@@ -123,33 +123,42 @@ Note that the number of trainable parameters is reduced by controlling the rank 
 
 LoRA is not applied to all weight matrices, but usually the library (`peft`) decides where to apply it; e.g.: projection matrices $Q$ and $V$ in attention blocks, MLP layers, etc. And, after training, we can merge $W + dW$, so there is no latency added!
 
+In addition to LoRA, **quantization** is often applied to further reduce the model size and speed up inference. Quantization consists in reducing the precision of the weights from 32-bit floating point values to 16-bit or even 4-bit integers (QLoRA); in other words, floats with high precision are represented with only `k` bits by truncating their least significant bits. This can be done using the library [bitsandbytes](https://github.com/bitsandbytes-foundation/bitsandbytes), which is very well integrated with the HuggingFace ecosystem.
+
 If you want to learn more about PEFT and LoRA, I recommend checking the following resources:
 
 - [LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
 - [Hugging Face LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
 
-## Implementation
+## Implementation Notebook
 
-Thanks to the `peft` library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](#) contains the Jupyter Notebook [`llm_peft.ipynb`](#) in which an example is provided.
+Thanks to the [`peft`](https://github.com/huggingface/peft) library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](https://github.com/mxagar/llm_peft_fine_tuning_example) I have prepared contains the Jupyter Notebook [`llm_peft.ipynb`](https://github.com/mxagar/llm_peft_fine_tuning_example/blob/main/llm_peft.ipynb) in which an example is provided.
 
-In the example, I use DistilBERT, which is a smaller version of BERT that has been distilled to reduce its size and computational requirements while maintaining good performance.
+In the example, I fine-tune the [DistilBERT](https://arxiv.org/abs/1910.01108) pre-trained model, which is a smaller version of the encoder-only [BERT](https://arxiv.org/abs/1810.04805) that has been distilled to reduce its size and computational requirements, while maintaining good performance. An alternative for larger datasets could be [RoBERTa](https://arxiv.org/abs/1907.11692), which was trained roughly on `10x` more data than BERT, and has approximately double the parameters than DistilBERT. We could use other models, too, e.g., generative decoder transformers like [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), although in general RoBERTa seems to have better performance for classification tasks. GPT-2 is similar in size to RoBERTa.
 
-DistilBERT is a distillation of BERT one of the first encoder-only transformer models, trained basically on Masked Language Modeling (MLM) -- predicting a masked word.
-An alternative for larger datasets could be RoBERTa, which was trained roughly on 10x more data than BERT, and has roughly double the parameters than DistilBERT.
+The dataset I use is [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news), which consists of roughly 120,000 news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'`. Thus, the *task* head is *text classification* (with exclusive 4 categories) and the *domain* is *news*.
 
-We could use other models, e.g., generative decoder transformers like GPT2, although in general RoBERTa seems to have better performance for classification tasks.
-GPT-2 is similar in size to RoBERTa.
+`extract_hidden_states()`
+
+<p align="center">
+<img src="./assets/ag_news_embedding_class_plot.png" alt="Hexagonal plot of the AG News embeddings according to their classes." width="1000"/>
+<small style="color:grey">A hexagonal plot of the embeddings from the <a href="https://huggingface.co/datasets/fancyzhx/ag_news">AG News dataset</a> according to their classes. The embeddings are the last hidden states of the <a href="https://huggingface.co/docs/transformers/en/model_doc/distilbert">DistilBERT</a> model, and they were reduced to 2D using <a href="https://umap-learn.readthedocs.io/en/latest/">UMAP</a>. Image by the author.</small>
+</p>
+
+
+Other aspects are covered in the notebook, such as:
+
+- A
+- B
+- C
+
+## Conclusion
 
 Finally, if you are interested, consider checking these additional resources:
 
 - A
 - B
 - C
-
-## Results
-
-## Conclusion
-
 
 
 
