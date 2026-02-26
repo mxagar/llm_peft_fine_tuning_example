@@ -31,6 +31,12 @@ Subtitle: When We Need to Adapt LLMs to Specific Tasks and Domains
 Blog Post 3: Retrieval Augmented Generation (RAG) with LLMs: Some Blueprints
 Subtitle: How to Use External Knowledge Bases to Enhance LLM Responses
 
+This site chronicles my observations in the fast-evolving landscape of data science.
+You'll find my explorations of AI/ML topics spanning computer vision, NLP, 3D, robotics... and more.
+
+This site chronicles my observations in the fast-evolving landscape of data science,
+covering topics related to AI/ML, computer vision, NLP, 3D, robotics... and more!
+
 -->
 
 <p align="center">
@@ -48,3 +54,40 @@ An alternative for larger datasets could be RoBERTa, which was trained roughly o
 We could use other models, e.g., generative decoder transformers like GPT2, although in general RoBERTa seems to have better performance for classification tasks.
 GPT-2 is similar in size to RoBERTa.
 
+
+
+With Low-Rank Adaptation, we basically decompose a weights matrix into a multiplication of low rank matrices:
+
+    W = W + dW, where
+    W: weight matrix (d, d)
+    dW: weight offset to be learned (d,d)
+    dW = A*B, where
+    A is (d, r)
+    and B (r, f)
+    and r << d
+
+The idea is that we freeze W while we learn dW, but instead of learning the full sized dW, we learn the much smaller A and B; the size of these low-rank matrices is controlled by r.
+
+    y = x * W
+    y = x * (W + dW) = x * (W + A*B), where
+    x*W is frozen
+    x*A*B is trainable
+
+So, if W is (d, d) and A and B have rank r, the proportion of weights in dW as compared to W is:
+
+    Weights W: d^2
+    Weights A and B: 2 * (r*d)
+    Proportion: 2*r/d
+
+Additional notes:
+
+- LoRA is not applied to all weight matrices, but the library (peft) decides where to apply it; e.g.: projection matrices Q and V in attention blocks, MLP layers, etc.
+- We dramatically reduce the number of parameters by controlling r.
+- LoRA can be used in combination with other methods.
+- Performance is comparable to fully fine-tuned models!
+- After training, we can merge W + dW, so there is no latency added!
+
+More information:
+
+- [LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
+- [Hugging Face LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
