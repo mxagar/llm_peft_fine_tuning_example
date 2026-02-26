@@ -115,13 +115,13 @@ $$y = x \cdot W = x \cdot (W + dW) = x \cdot (W + A \cdot B).$$
 
 The proportion of weights in $dW$ as compared to $W$ is the following:
 
-- Weights $W$: $d \cdot f$
-- Weights $A$ and $B$: $r \cdot (d + f)$
-- Proportion: $\frac{r \cdot (d + f)}{d \cdot f}$
+- Weights of $W$: $d \cdot f$
+- Weights of $A$ and $B$: $r \cdot (d + f)$
+- Proportion: $r\cdot\frac{d + f}{d \cdot f}$
 
 Note that the number of trainable parameters is reduced by controlling the rank value $r$; for instance, if we set $r=4$, we can reduce the number of trainable parameters by more than `100x` for a weight matrix of size $(4096, 4096)$.
 
-LoRA is not applied to all weight matrices, but the library (`peft`) decides where to apply it; e.g.: projection matrices $Q$ and $V$ in attention blocks, MLP layers, etc. And, after training, we can merge $W + dW$, so there is no latency added!
+LoRA is not applied to all weight matrices, but usually the library (`peft`) decides where to apply it; e.g.: projection matrices $Q$ and $V$ in attention blocks, MLP layers, etc. And, after training, we can merge $W + dW$, so there is no latency added!
 
 If you want to learn more about PEFT and LoRA, I recommend checking the following resources:
 
@@ -130,9 +130,9 @@ If you want to learn more about PEFT and LoRA, I recommend checking the followin
 
 ## Implementation
 
-[Github repository](#)
+Thanks to the `peft` library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](#) contains the Jupyter Notebook [`llm_peft.ipynb`](#) in which an example is provided.
 
-[`llm_peft.ipynb`](#)
+In the example, I use DistilBERT, which is a smaller version of BERT that has been distilled to reduce its size and computational requirements while maintaining good performance.
 
 DistilBERT is a distillation of BERT one of the first encoder-only transformer models, trained basically on Masked Language Modeling (MLM) -- predicting a masked word.
 An alternative for larger datasets could be RoBERTa, which was trained roughly on 10x more data than BERT, and has roughly double the parameters than DistilBERT.
