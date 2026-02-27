@@ -51,9 +51,9 @@ In my [previous post](https://mikelsagardia.io/posts/) I explained how LLMs are 
 
 In summary, I cover the following topics in this post:
 
-- A
-- B
-- C
+- What *task* and *domain* adaptation of LLMs is, and which techniques are commonly used for it.
+- How PEFT/LoRA works, and how it reduces the number of trainable parameters by orders of magnitude.
+- Explanation of a [Jupyter Notebook](https://github.com/mxagar/llm_peft_fine_tuning_example/blob/main/llm_peft.ipynb) that implements PEFT/LoRA on a [DistilBERT model](https://huggingface.co/docs/transformers/en/model_doc/distilbert) for a text classification task, using the [AG News](https://huggingface.co/datasets/fancyzhx/ag_news) dataset.
 
 Let's start!
 
@@ -125,40 +125,128 @@ LoRA is not applied to all weight matrices, but usually the library (`peft`) dec
 
 In addition to LoRA, **quantization** is often applied to further reduce the model size and speed up inference. Quantization consists in reducing the precision of the weights from 32-bit floating point values to 16-bit or even 4-bit integers (QLoRA); in other words, floats with high precision are represented with only `k` bits by truncating their least significant bits. This can be done using the library [bitsandbytes](https://github.com/bitsandbytes-foundation/bitsandbytes), which is very well integrated with the HuggingFace ecosystem.
 
-If you want to learn more about PEFT and LoRA, I recommend checking the following resources:
-
-- [LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
-- [Hugging Face LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
-
 ## Implementation Notebook
 
-Thanks to the [`peft`](https://github.com/huggingface/peft) library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](https://github.com/mxagar/llm_peft_fine_tuning_example) I have prepared contains the Jupyter Notebook [`llm_peft.ipynb`](https://github.com/mxagar/llm_peft_fine_tuning_example/blob/main/llm_peft.ipynb) in which an example is provided.
+Thanks to the [`peft`](https://github.com/huggingface/peft) library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](https://github.com/mxagar/llm_peft_fine_tuning_example) I have prepared contains the Jupyter Notebook [`llm_peft.ipynb`](https://github.com/mxagar/llm_peft_fine_tuning_example/blob/main/llm_peft.ipynb), in which I provide an example.
 
-In the example, I fine-tune the [DistilBERT](https://arxiv.org/abs/1910.01108) pre-trained model, which is a smaller version of the encoder-only [BERT](https://arxiv.org/abs/1810.04805) that has been distilled to reduce its size and computational requirements, while maintaining good performance. An alternative for larger datasets could be [RoBERTa](https://arxiv.org/abs/1907.11692), which was trained roughly on `10x` more data than BERT, and has approximately double the parameters than DistilBERT. We could use other models, too, e.g., generative decoder transformers like [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), although in general RoBERTa seems to have better performance for classification tasks. GPT-2 is similar in size to RoBERTa.
+There, I fine-tune the [DistilBERT](https://arxiv.org/abs/1910.01108) pre-trained model; DistilBERT is a smaller version of the encoder-only [BERT](https://arxiv.org/abs/1810.04805) that has been distilled to reduce its size and computational requirements, while maintaining good performance. An alternative could have been [RoBERTa](https://arxiv.org/abs/1907.11692), which was trained roughly on `10x` more data than BERT, and has approximately double the parameters than DistilBERT. We could use other models, too, e.g., generative decoder transformers like [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), although in general RoBERTa seems to have better performance for classification tasks. GPT-2 is similar in size to RoBERTa.
 
-The dataset I use is [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news), which consists of roughly 120,000 news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'`. Thus, the *task* head is *text classification* (with exclusive 4 categories) and the *domain* is *news*.
+The dataset I use is [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news), which consists of roughly 120,000 news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'` (perfectly balanced). Thus, the *task* head is *text classification* (with 4 mutually exclusive categories) and the *domain* is *news*.
 
-`extract_hidden_states()`
+The notebook is structured in clear sections and comments, which I won't fully reproduce here; the core steps are the following:
+
+- Dataset splitting: I divide the 120k samples into the sets `train` (108k samples), `test` (7.6k), and `validation` (12k).
+- Tokenization: The `AutoTokenizer` is instantiated with the `distilbert-base-uncased` pre-trained subword tokenizer.
+- Feature exploration: some exploratory data analysis is performed.
+- Model setup: the `AutoModelForSequenceClassification` is instantiated with the `distilbert-base-uncased` pre-trained model, and the `PeftModel` is instantiated with the LoRA configuration.
+- Training: the `Trainer` class is instantiated with the model, the `TrainingArguments`, and the datasets; then, the `train()` method is called to start training.
+- Evaluation: we use the `evaluate()` method of the `Trainer` to evaluate the model on the test set, and we compute our custom metrics (accuracy, precision, recall, and F1), as defined in `compute_metrics()`.
+
+The feature exploration reveals that learning the classification task is going to be quite easy for the model. The function `extract_hidden_states()` is used to extract the last hidden states computed by the model, after each sample is passed through it. Then, these sample embeddings are mapped to 2D using [UMAP](https://umap-learn.readthedocs.io/en/latest/), and plotted in a hexagonal plot colored by class. As we can see, each class occupies a different region in the embedding space without any fine-tuning &mdash; that is, the model already has a good understanding of the differences between the classes.
 
 <p align="center">
 <img src="./assets/ag_news_embedding_class_plot.png" alt="Hexagonal plot of the AG News embeddings according to their classes." width="1000"/>
 <small style="color:grey">A hexagonal plot of the embeddings from the <a href="https://huggingface.co/datasets/fancyzhx/ag_news">AG News dataset</a> according to their classes. The embeddings are the last hidden states of the <a href="https://huggingface.co/docs/transformers/en/model_doc/distilbert">DistilBERT</a> model, and they were reduced to 2D using <a href="https://umap-learn.readthedocs.io/en/latest/">UMAP</a>. Image by the author.</small>
 </p>
 
+The key aspect is the model setup for training, which is very straightforward thanks to the HuggingFace ecosystem. The code snippet below shows all the steps:
+
+```python
+# Quantization config (4-bit for minimal memory usage)
+# WARNING: This requires the `bitsandbytes` library to be installed 
+# and Intel CPU and/or 'cuda', 'mps', 'hpu', 'xpu', 'npu'
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,                      # Activate 4-bit quantization
+    bnb_4bit_use_double_quant=True,         # Use double quantization for better accuracy
+    bnb_4bit_compute_dtype="bfloat16",      # Use bf16 if supported, else float16
+    bnb_4bit_quant_type="nf4",              # Quantization type: 'nf4' is best for LLMs
+)
+
+# Transformer model: we re-instantiate it to apply LoRA
+# We should get a warning about the model weights not being initialized for some layers
+# This is because we have appended the classifier head and we haven't trained the model yet
+model = AutoModelForSequenceClassification.from_pretrained(
+    "distilbert-base-uncased",
+    num_labels=len(id2label),
+    id2label=id2label,
+    label2id=label2id,
+    quantization_config=bnb_config,
+    device_map="auto"  # Optional: distributes across GPUs if available
+)
+
+# LoRA configuration
+# We need to check the target modules for the specific model we are using (see below)
+# - For distilbert-base-uncased, we use "q_lin" and "v_lin" for the attention layers
+# - For bert-base-uncased, we would use "query" and "value"
+# The A*B weights are scaled with lora_alpha/r
+lora_config = LoraConfig(
+    r=16,                                   # Low-rank dimensionality
+    lora_alpha=32,                          # Scaling factor
+    target_modules=["q_lin", "v_lin"],      # Submodules to apply LoRA to (model-specific)
+    lora_dropout=0.1,                       # Dropout for LoRA layers
+    bias="none",                            # Do not train bias
+    task_type=TaskType.SEQ_CLS              # Task type: sequence classification
+)
+
+# Get the PEFT model with LoRA
+lora_model = get_peft_model(model, lora_config)
+
+# Define training arguments
+training_args = TrainingArguments(
+    learning_rate=2e-3,
+    weight_decay=0.01,
+    num_train_epochs=1,
+    eval_strategy="steps",
+    save_strategy="steps",
+    eval_steps=200,
+    save_steps=200,
+    # This seems to be a bug for PEFT models: we need to specify 'labels', not 'label'
+    # as the explicit label column name
+    # If we are not using PEFT, we can ignore this argument
+    label_names=["labels"],  # explicitly specify label column name
+    output_dir="./checkpoints",
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
+    load_best_model_at_end=True,
+    logging_dir="./logs",
+    report_to="tensorboard",  # enable TensorBoard, if desired
+)
+
+# Initialize the Trainer
+trainer = Trainer(
+    model=lora_model,  # Transformer + Adapter (LoRA)
+    args=training_args,
+    train_dataset=tokenized_dataset["train"],
+    eval_dataset=tokenized_dataset["validation"],
+    processing_class=tokenizer,
+    compute_metrics=compute_metrics,
+)
+```
+
+After training, the model achieves an F1 score of `0.90` on the test set (compared to `0.16` before fine-tuning), which is a very good result for this task.
 
 Other aspects are covered in the notebook, such as:
 
-- A
-- B
-- C
+- The training can be monitored using [TensorBoard](https://www.tensorflow.org/tensorboard).
+- A `predict()` custom function is provided, which taken an input text, it tokenizes it, passes it through the model, and decodes the predicted label.
+- LoRA weights are merged and the model is persisted. Merging the LoRA weights consists in computing every $dW$ and adding them to the corresponding $W$; as mentioned before, after merging, the model can be used for inference without any latency increase.
+- Some error analysis is performed by looking at the misclassified samples.
+- Finally, model packaging is addressed using ONNX. This is also straightforward thanks to the HuggingFace & PyTorch ecosystem, yet essential to be able to deploy the model in production.
 
-## Conclusion
+## Summary and Conclusion
 
-Finally, if you are interested, consider checking these additional resources:
+In this post, I have explained how to adapt LLMs to specific tasks and domains using Parameter-Efficient Fine-Tuning (PEFT), and more concretely, [Low-Rank Adaptation (or LoRA, introduced by Hu et al., 2021)](https://arxiv.org/abs/2106.09685). This technique allows us to train only a small number of parameters while maintaining good performance, which makes it accessible to train and store large language models on consumer hardware.
 
-- A
-- B
-- C
+I have used the classification task applied to the [AG News](https://huggingface.co/datasets/fancyzhx/ag_news) dataset, but many more tasks are possible: token classification (e.g., named entity recognition), question answering, summarization, etc.
 
+> Which task and domain adaptation do you have in mind?
 
+I think that [HuggingFace](https://huggingface.co/) ecosystem is incredible, as it offers plethora of pre-trained models, datasets, and libraries that make it very easy to work with LLMs, from research to production.
 
+If you you would like to deepen on the topic, consider checking these additional resources:
+
+- [LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
+- [Hugging Face LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
+- [HuggingFace Guide: `mxagar/tool_guides/hugging_face`](https://github.com/mxagar/tool_guides/tree/master/hugging_face)
+- My personal notes on the O'Reilly book [Natural Language Processing with Transformers, by Lewis Tunstall, Leandro von Werra and Thomas Wolf (O'Reilly)](https://github.com/mxagar/nlp_with_transformers_nbs)
+- My personal notes and guide for the [Generative AI Nanodegree from Udacity](https://github.com/mxagar/generative_ai_udacity/)
