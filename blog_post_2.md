@@ -45,7 +45,7 @@ covering topics related to AI/ML, computer vision, NLP, 3D, robotics... and more
 </small>
 </p>
 
-In my [previous post](https://mikelsagardia.io/posts/) I explained how LLMs are built, and how they work. In this post, I will try to explain how to adapt LLMs easily to specific *tasks* and *domains* using [HuggingFace's `peft` library](https://github.com/huggingface/peft). As explained in the official site, [PEFT or Parameter-Efficient Fine-Tuning](https://huggingface.co/docs/peft/en/index) is a family of techniques that
+In my [previous post](https://mikelsagardia.io/posts/) I explained how LLMs are built, and how they work. In this post, I will try to explain how to adapt LLMs easily to specific *tasks* and *domains* using [HuggingFace's `peft` library](https://github.com/huggingface/peft). As explained on the official site, [PEFT (Parameter-Efficient Fine-Tuning)](https://huggingface.co/docs/peft/en/index) is a family of techniques that
 
 > only fine-tune a small number of (extra) model parameters &mdash; significantly decreasing computational and storage costs &mdash; while yielding performance comparable to a fully fine-tuned model. This makes it more accessible to train and store large language models (LLMs) on consumer hardware.
 
@@ -72,7 +72,7 @@ First of all, we should define some terminology:
 - A *Task*: a specific problem we want to solve. The task is usually defined by the *input* and the *output* formats. Typically, LLMs are trained on the general task of *language modeling*: predicting the next word/token given an input sequence (i.e., the context); as such, they are able to generate coherent text related to the input. However, we can change their output layers (also known as *heads*) to perform other tasks, such as *text classification* (e.g., *sentiment analysis* and *topic classification*), *token classification* (e.g., *named entity recognition* or NER), etc.
 - A *Domain*: the specific area or context to which the training texts belong and in which the task needs to be performed. Typically, LLMs are trained on a wide variety of texts from the Internet, which makes them generalists. However, we may want to adapt them to specific domains, such as *medicine*, *finance*, *legal*, etc. The more niche the domain, the more we may need to adapt the LLM to it to learn style, jargon, and specific knowledge.
 
-This *task* and *domain* adaptation, although it is named as *fine-tuning* for LLMs, is known as *transfer learning* in the context of computer vision. It was [Howard and Ruder (2017)](https://arxiv.org/abs/1801.06146) who showed that a language model trained on a large corpus can be re-adapted for smaller corpora and other downstream tasks.
+This *task* and *domain* adaptation, although referred to as *fine-tuning* in the LLM world, is known as *transfer learning* in the context of computer vision. [Howard and Ruder (2017)](https://arxiv.org/abs/1801.06146) showed that a language model trained on a large corpus can be adapted for smaller corpora and other downstream tasks.
 
 One common approach in the [PEFT](https://huggingface.co/docs/peft/en/index) library is the [Low-Rank Adaptation (or LoRA, introduced by Hu et al., 2021)](https://arxiv.org/abs/2106.09685), which I cover in more detail in the next section. In a nutshell: LoRA freezes the pre-trained weight matrices $W$ and adds to them new matrices $dW$, which are the ones that are trained. These $dW$ matrices are factored as the multiplication of two low-rank matrices; that trick reduces trainable parameters by orders of magnitude and maintains or matches full fine-tuning performance on many benchmarks.
 
@@ -92,11 +92,11 @@ When we apply Low-Rank Adaptation (LoRA), we basically decompose a weight matrix
 
 Let's consider a pre-trained weight matrix $W$; instead of changing it directly, we add to it a weight offset $dW$ as follows:
 
-$$W = W + dW,$$
+$$\hat{W} = W + dW,$$
 
 where 
 
-- $W$ represents a weight matrix of shape $(d, f)$
+- $\hat{W}$ represents the adapted weight matrix $(d, f)$
 - and $dW$ is a weight offset to be learned, of shape $(d, f)$.
 
 However, we do not operate directly with the weight offset $dW$; instead, we factor it as the multiplication of two low-rank matrices:
@@ -109,7 +109,7 @@ where
 - $B$ is of shape $(r, f)$,
 - and $r << d, f$.
 
-The key idea is that during training we freeze $W$ while we learn $dW$, but instead of learning the full sized $dW$, we learn the much smaller $A$ and $B$. The forward pass of the model is modified as follows:
+The key idea is that during training we freeze $W$ while we learn $dW$; however, instead of learning the full-sized $dW$, we learn the much smaller matrices $A$ and $B$. The forward pass of the model is modified as follows:
 
 $$y = x \cdot W = x \cdot (W + dW) = x \cdot (W + A \cdot B).$$
 
@@ -123,19 +123,21 @@ Note that the number of trainable parameters is reduced by controlling the rank 
 
 LoRA is not applied to all weight matrices, but usually the library (`peft`) decides where to apply it; e.g.: projection matrices $Q$ and $V$ in attention blocks, MLP layers, etc. And, after training, we can merge $W + dW$, so there is no latency added!
 
-In addition to LoRA, **quantization** is often applied to further reduce the model size and speed up inference. Quantization consists in reducing the precision of the weights from 32-bit floating point values to 16-bit or even 4-bit integers (QLoRA); in other words, floats with high precision are represented with only `k` bits by truncating their least significant bits. This can be done using the library [bitsandbytes](https://github.com/bitsandbytes-foundation/bitsandbytes), which is very well integrated with the HuggingFace ecosystem.
+In practice, LoRA assumes that the task-specific update to a large weight matrix lies in a low-dimensional subspace &mdash; and therefore can be efficiently represented with low-rank matrices.
+
+In addition to LoRA, **quantization** is often applied to further reduce the model size and speed up inference. Quantization consists in reducing the precision of the weights from 32-bit floating point values to 16-bit or even 4-bit representations (as in QLoRA); in other words, high-precision floats are approximated using only `k` bits. This is achieved by scaling and mapping the original values to a smaller discrete set, sometimes combined with truncating less significant information. Quantization can be easily applied using the library [bitsandbytes](https://github.com/bitsandbytes-foundation/bitsandbytes), which is very well integrated with the HuggingFace ecosystem.
 
 ## Implementation Notebook
 
 Thanks to the [`peft`](https://github.com/huggingface/peft) library, applying PEFT/LoRA to an LLM is very easy. The [Github repository](https://github.com/mxagar/llm_peft_fine_tuning_example) I have prepared contains the Jupyter Notebook [`llm_peft.ipynb`](https://github.com/mxagar/llm_peft_fine_tuning_example/blob/main/llm_peft.ipynb), in which I provide an example.
 
-There, I fine-tune the [DistilBERT](https://arxiv.org/abs/1910.01108) pre-trained model; DistilBERT is a smaller version of the encoder-only [BERT](https://arxiv.org/abs/1810.04805) that has been distilled to reduce its size and computational requirements, while maintaining good performance. An alternative could have been [RoBERTa](https://arxiv.org/abs/1907.11692), which was trained roughly on `10x` more data than BERT, and has approximately double the parameters than DistilBERT. We could use other models, too, e.g., generative decoder transformers like [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), although in general RoBERTa seems to have better performance for classification tasks. GPT-2 is similar in size to RoBERTa.
+There, I fine-tune the [DistilBERT](https://arxiv.org/abs/1910.01108) pre-trained model; DistilBERT is a smaller version of the encoder-only [BERT](https://arxiv.org/abs/1810.04805) that has been distilled to reduce its size and computational requirements, while maintaining good performance. An alternative could have been [RoBERTa](https://arxiv.org/abs/1907.11692), which was trained roughly on `10x` more data than BERT and has approximately twice the parameters of DistilBERT. We could use other models, too, e.g., generative decoder transformers like [GPT-2](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf), although in general RoBERTa seems to have better performance for classification tasks. GPT-2 is similar in size to RoBERTa.
 
-The dataset I use is [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news), which consists of roughly 120,000 news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'` (perfectly balanced). Thus, the *task* head is *text classification* (with 4 mutually exclusive categories) and the *domain* is *news*.
+The dataset I use is [`ag_news`](https://huggingface.co/datasets/fancyzhx/ag_news), which consists of roughly 127,600 news texts, each of them with a label related to its associated topic: `'World', 'Sports', 'Business', 'Sci/Tech'` (perfectly balanced). Thus, the *task* head is *text classification* (with 4 mutually exclusive categories) and the *domain* is *news*.
 
 The notebook is structured in clear sections and comments, which I won't fully reproduce here; the core steps are the following:
 
-- Dataset splitting: I divide the 120k samples into the sets `train` (108k samples), `test` (7.6k), and `validation` (12k).
+- Dataset splitting: I divide the 127,600 samples into the sets `train` (108k samples), `test` (7.6k), and `validation` (12k).
 - Tokenization: The `AutoTokenizer` is instantiated with the `distilbert-base-uncased` pre-trained subword tokenizer.
 - Feature exploration: some exploratory data analysis is performed.
 - Model setup: the `AutoModelForSequenceClassification` is instantiated with the `distilbert-base-uncased` pre-trained model, and the `PeftModel` is instantiated with the LoRA configuration.
@@ -228,7 +230,7 @@ After training, the model achieves an F1 score of `0.90` on the test set (compar
 Other aspects are covered in the notebook, such as:
 
 - The training can be monitored using [TensorBoard](https://www.tensorflow.org/tensorboard).
-- A `predict()` custom function is provided, which taken an input text, it tokenizes it, passes it through the model, and decodes the predicted label.
+- A `predict()` custom function is provided, which takes an input text, tokenizes it, passes it through the model, and decodes the predicted label.
 - LoRA weights are merged and the model is persisted. Merging the LoRA weights consists in computing every $dW$ and adding them to the corresponding $W$; as mentioned before, after merging, the model can be used for inference without any latency increase.
 - Some error analysis is performed by looking at the misclassified samples.
 - Finally, model packaging is addressed using ONNX. This is also straightforward thanks to the HuggingFace & PyTorch ecosystem, yet essential to be able to deploy the model in production.
@@ -239,11 +241,11 @@ In this post, I have explained how to adapt LLMs to specific tasks and domains u
 
 I have used the classification task applied to the [AG News](https://huggingface.co/datasets/fancyzhx/ag_news) dataset, but many more tasks are possible: token classification (e.g., named entity recognition), question answering, summarization, etc.
 
-> Which task and domain adaptation do you have in mind?
+> Which task and domain would you like to adapt an LLM to?
 
-I think that [HuggingFace](https://huggingface.co/) ecosystem is incredible, as it offers plethora of pre-trained models, datasets, and libraries that make it very easy to work with LLMs, from research to production.
+I think that the [HuggingFace](https://huggingface.co/) ecosystem is incredible, as it offers plethora of pre-trained models, datasets, and libraries that make it very easy to work with LLMs, from research to production.
 
-If you you would like to deepen on the topic, consider checking these additional resources:
+If you would like to deepen your understanding of the topic, consider checking these additional resources:
 
 - [LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)](https://arxiv.org/abs/2106.09685)
 - [Hugging Face LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
